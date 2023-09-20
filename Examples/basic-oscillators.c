@@ -36,3 +36,7 @@ float exampleRandom()
     return ((float)rand()/(float)(RAND_MAX));
 }
 
+int main()
+{
+    return 0;
+}
