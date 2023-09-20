@@ -1,5 +1,5 @@
 CFLAGS := -Wall -Wextra -fPIC -I../leaf/Inc
-LDFLAGS := -L../leaf -lleaf -lm
+LDFLAGS := -L../leaf -lleaf -lm -lsndfile
 
 
 all: \

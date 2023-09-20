@@ -9,27 +9,13 @@
 */
 
 #include "basic-oscillators.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sndfile.h>
 
-void exampleInit()
-{
-    LEAF leaf;
-    
-    LEAF_init(&leaf, 44100, mempool, 1000, &exampleRandom);
-    
-    tCycle_init(&cycle, &leaf);
-    tCycle_setFreq(&cycle, 220);
-}
-
-void exampleFrame()
-{
-    
-}
-
-float exampleTick(float sampleIn)
-{
-    float sampleOut = tCycle_tick(&cycle);
-    return sampleOut;
-}
+#define AUDIO_BUFFER_SIZE (44100*5)
+#define SAMPLERATE 44100
+float audioBuffer[AUDIO_BUFFER_SIZE];
 
 float exampleRandom()
 {
@@ -38,5 +24,36 @@ float exampleRandom()
 
 int main()
 {
+
+    const char* filename = "output.wav";
+
+    // Open the audio file for writing
+    SF_INFO sfinfo;
+    sfinfo.samplerate = SAMPLERATE;
+    sfinfo.channels = 1;
+    sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+    SNDFILE* outfile = sf_open(filename, SFM_WRITE, &sfinfo);
+    if (!outfile) {
+        printf("Error opening audio file for writing\n");
+        return 1;
+    }
+    
+    LEAF leaf;
+    
+    LEAF_init(&leaf, SAMPLERATE, mempool, AUDIO_BUFFER_SIZE, &exampleRandom);
+    
+    tCycle_init(&cycle, &leaf);
+    tCycle_setFreq(&cycle, 220);
+    
+    for (int i = 0; i < AUDIO_BUFFER_SIZE; i++)
+    {
+        audioBuffer[i] = tCycle_tick(&cycle);
+    }
+    
+    // Write the audio data to the file
+    sf_writef_float(outfile, audioBuffer, AUDIO_BUFFER_SIZE);
+
+    // Close the audio file
+    sf_close(outfile);
     return 0;
 }
