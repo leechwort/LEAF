@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -Wall -Wextra -IExternals -fPIC
+CFLAGS := -Wall -Wextra -g -IExternals -fPIC
 LDLIBS := -lm
 
 SRC_DIR := Src
